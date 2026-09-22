@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#070b14">
+<title>NetScope V3 — Network Intelligence</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="orb orb-a"></div><div class="orb orb-b"></div>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark"><span></span><span></span><span></span></div>
+    <div><h1>NetScope <em>V3</em></h1><p>Network Intelligence Center</p></div>
+  </div>
+  <div class="status"><i></i><span id="liveText">SYSTEM ONLINE</span></div>
+</header>
+
+<main>
+  <section class="hero">
+    <div>
+      <div class="eyebrow">CYBERSECURITY • NETWORK ANALYSIS</div>
+      <h2>See your network.<br><strong>Understand every signal.</strong></h2>
+      <p>Real-time network visibility, packet intelligence and authorized security testing — optimized for Android.</p>
+    </div>
+    <div class="hero-chip"><span>LOCAL</span><b id="host">—</b></div>
+  </section>
+
+  <section class="metric-grid">
+    <article class="metric"><div class="metric-icon">↓</div><div><small>DOWNLOAD</small><b id="down">0 B/s</b><span>Live active-interface rate</span></div></article>
+    <article class="metric"><div class="metric-icon">↑</div><div><small>UPLOAD</small><b id="up">0 B/s</b><span>Live active-interface rate</span></div></article>
+    <article class="metric"><div class="metric-icon">◉</div><div><small>PACKETS</small><b id="packets">0</b><span id="protocols">TCP 0 · UDP 0</span></div></article>
+    <article class="metric"><div class="metric-icon">⌁</div><div><small>ENGINE</small><b>READY</b><span>Android / Termux</span></div></article>
+  </section>
+
+
+  <section class="panel mobile-panel">
+    <div class="panel-head">
+      <div><div class="kicker">JIO MOBILE DATA</div><h3>Cellular connection intelligence</h3></div>
+      <span class="pill" id="mobileGen">DETECTING</span>
+    </div>
+    <div class="mobile-grid">
+      <div class="mobile-main">
+        <div class="signal-bars"><i></i><i></i><i></i><i></i><i></i></div>
+        <div><b id="operator">—</b><span id="mobileType">Reading Android radio information…</span></div>
+      </div>
+      <div><div class="mobile-label">PUBLIC IP</div><strong id="publicIp">—</strong></div>
+      <div><div class="mobile-label">DNS</div><strong id="dns">—</strong></div>
+      <div><div class="mobile-label">DATA STATE</div><strong id="dataState">—</strong></div>
+      <div><div class="mobile-label">SIM STATE</div><strong id="simState">—</strong></div>
+    </div>
+    <div class="signal-detail" id="signalDetail">Signal details depend on Android/OEM permissions.</div>
+  </section>
+
+
+  <section class="panel speed-panel">
+    <div class="panel-head">
+      <div><div class="kicker">INTERNET SPEED</div><h3>Network Speed Test</h3></div>
+      <span class="pill" id="speedStatus">READY</span>
+    </div>
+    <div class="speed-dashboard">
+      <div class="speed-gauge">
+        <div class="speed-value" id="speedValue">—</div>
+        <div class="speed-unit">Mbps</div>
+        <div class="speed-label" id="speedPhase">Press Start Test</div>
+      </div>
+      <div class="speed-metrics">
+        <div class="speed-metric"><span>DOWNLOAD</span><b id="downloadSpeed">—</b><small>Mbps</small></div>
+        <div class="speed-metric"><span>UPLOAD</span><b id="uploadSpeed">—</b><small>Mbps</small></div>
+        <div class="speed-metric"><span>LATENCY</span><b id="speedPing">—</b><small>ms</small></div>
+        <div class="speed-metric"><span>JITTER</span><b id="speedJitter">—</b><small>ms</small></div>
+      </div>
+    </div>
+    <button class="primary-btn" id="speedBtn" onclick="runSpeedTest()">▶ START SPEED TEST</button>
+    <div class="speed-note">Uses public speed-test endpoints. Results can vary with signal, server load, and mobile-network conditions.</div>
+  </section>
+
+  <section class="panel network-panel">
+    <div class="panel-head"><div><div class="kicker">NETWORK STATUS</div><h3>Interface intelligence</h3></div><span class="pill" id="netState">CONNECTED</span></div>
+    <div class="network-body">
+      <div class="network-visual">
+        <div class="radar"><div class="radar-ring r1"></div><div class="radar-ring r2"></div><div class="radar-dot"></div></div>
+        <div><strong id="networkTitle">Local network</strong><p>Live routing & address information</p></div>
+      </div>
+      <pre id="net">Loading network information…</pre>
+    </div>
+  </section>
+
+  <section class="two-col">
+    <article class="panel">
+      <div class="panel-head"><div><div class="kicker">PACKET INTELLIGENCE</div><h3>Capture console</h3></div>
+        <div class="actions"><button class="primary" onclick="capture(1)">Start</button><button onclick="capture(0)">Stop</button></div>
+      </div>
+      <div class="packet-stats">
+        <div><span>TCP</span><b id="tcp">0</b></div><div><span>UDP</span><b id="udp">0</b></div>
+        <div><span>ICMP</span><b id="icmp">0</b></div><div><span>IPv4</span><b id="ipv4">0</b></div>
+      </div>
+      <div class="feed-head"><span>TIME</span><span>PROTOCOL</span><span>SOURCE → DESTINATION</span><span>SIZE</span></div>
+      <div id="feed" class="feed"><div class="empty">Start capture to view packets.</div></div>
+    </article>
+
+    <article class="panel scanner">
+      <div class="panel-head"><div><div class="kicker">SECURITY TESTING</div><h3>Authorized TCP scanner</h3></div><span class="scan-icon">⌁</span></div>
+      <p class="hint">Scan only systems you own or have explicit permission to test.</p>
+      <label>Target</label>
+      <input id="target" placeholder="192.168.1.1">
+      <label>Ports</label>
+      <input id="ports" value="22,53,80,443,8080" placeholder="22,53,80,443">
+      <div class="scan-actions"><button class="primary wide" onclick="scan()">Run scan</button><button class="wide" onclick="ping()">Ping</button></div>
+      <div id="result" class="scan-result"><span class="dot"></span><span>Ready for a scan.</span></div>
+    </article>
+  </section>
+
+  <section class="panel history-panel">
+    <div class="panel-head"><div><div class="kicker">ACTIVITY</div><h3>Recent scans</h3></div><div class="actions"><button onclick="history()">Refresh</button><a class="download" href="/api/export">Export CSV</a></div></div>
+    <div id="history" class="history"><div class="empty">No scans yet.</div></div>
+  </section>
+
+  <footer>
+  <span>NetScope V4</span>
+  <span>Built for authorized network analysis</span>
+  <span id="clock">—</span>
+  <div class="developer-credit">Developed by <strong>Albin Joseph</strong> · <b>BCA Project</b></div>
+</footer>
+</main>
+<script src="/static/app.js"></script>
+</body>
+</html>

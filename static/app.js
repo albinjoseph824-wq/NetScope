@@ -167,17 +167,53 @@ async function runSpeedTest(){
 }
 
 async function mobile(){
- try{
-  const m=await(await fetch("/api/mobile")).json();
-  $("operator").textContent=m.operator||"Unknown carrier";
-  $("mobileType").textContent=(m.generation||"Unknown")+" · "+(m.network_type||"Unknown");
-  $("mobileGen").textContent=(m.generation||"UNKNOWN").toUpperCase();
-  $("publicIp").textContent=m.public_ip||"Unavailable";
-  $("dns").textContent=(m.dns&&m.dns.length)?m.dns.join(" · "):"Not exposed";
-  $("dataState").textContent=m.data_state||"Unknown";
-  $("simState").textContent=m.sim_state||"Unknown";
-  $("signalDetail").textContent=m.signal||"Signal details not exposed by Android";
- }catch(e){}
+  try{
+    const c = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+
+    const type = c && c.type ? c.type : "Unknown";
+    const effective = c && c.effectiveType ? c.effectiveType : "Unknown";
+    const downlink = c && typeof c.downlink === "number" ? c.downlink : null;
+    const rtt = c && typeof c.rtt === "number" ? c.rtt : null;
+    const saveData = c && typeof c.saveData === "boolean" ? c.saveData : null;
+
+    let generation = "UNKNOWN";
+    if(effective === "slow-2g") generation = "2G";
+    else if(effective === "2g") generation = "2G";
+    else if(effective === "3g") generation = "3G";
+    else if(effective === "4g") generation = "4G / 5G";
+
+    $("#operator").textContent =
+      type === "cellular" ? "Cellular network" :
+      type === "wifi" ? "Wi-Fi" :
+      type === "ethernet" ? "Ethernet" :
+      type || "Unknown";
+
+    $("#mobileType").textContent =
+      type === "cellular" ? "Cellular" : (type || "Unknown");
+
+    $("#mobileGen").textContent = generation;
+
+    $("#publicIp").textContent =
+      "Browser network detected";
+
+    $("#dns").textContent =
+      downlink !== null ? "Est. " + downlink + " Mbps" : "Not exposed";
+
+    $("#dataState").textContent =
+      navigator.onLine ? "Online" : "Offline";
+
+    $("#simState").textContent =
+      saveData === true ? "Data Saver ON" :
+      saveData === false ? "Data Saver OFF" :
+      "Browser API";
+
+    $("#signalDetail").textContent =
+      (rtt !== null ? "RTT: " + rtt + " ms" : "RTT unavailable") +
+      (effective !== "Unknown" ? " | Effective: " + effective : "");
+
+  }catch(e){
+    console.error("Browser network info error:", e);
+  }
 }
 const $=x=>document.getElementById(x);
 const fmt=b=>{let u=["B/s","KB/s","MB/s","GB/s"],i=0;while(b>=1024&&i<3){b/=1024;i++}return b.toFixed(i?1:0)+" "+u[i]};
